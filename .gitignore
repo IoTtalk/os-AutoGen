@@ -4,6 +4,7 @@
 *.py[co]
 *.db
 *.egg-info
+*.sqlite3
 .DS_Store
 __pycache__
 log/
