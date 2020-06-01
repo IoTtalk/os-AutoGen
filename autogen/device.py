@@ -2,13 +2,20 @@
 import logging
 import traceback
 
-from multiprocessing import Process, get_context
 from six import StringIO
+
+from iottalkpy.dai import module_to_sa
 
 from .exceptions import CompilationError
 
 log = logging.getLogger('autogen.device')
 log.setLevel(logging.DEBUG)
+
+
+# TODO load_module_from_str in dai
+class App(object):
+    def __init__(self, d):
+        self.__dict__ = d
 
 
 class _DeviceHandler():
@@ -21,47 +28,31 @@ class _DeviceHandler():
         if self._device_processes.get(device.token):
             return device.token
 
-        # If it does not exist, create a device process
-        # TODO
+        try:  # TODO, currently V2 only
+            # compile SA code
+            context = {}
+            exec(device.code, context)
 
-        ctx = get_context('forkserver')
-        target = getattr(self, f'_create_v{device.version}_device')
-
-        proc = ctx.Process(target=target, args=(device.code, device.token))
-        proc.daemon = False
-        proc.start()
-
-        self._device_processes[device.token] = proc
-
-        return device.token
-
-    def delete_device(self, device):
-        # Check if the device prcess exists
-        proc = self._device_processes.get(device.token)
-        if proc and proc.is_alive():
-            proc.terminate()
-            proc.join(2)
-
-        return device.token
-
-    @staticmethod
-    def _create_v1_device(code, token):
-        # TODO
-        pass
-
-    @staticmethod
-    def _create_v2_device(code, token):
-        # TODO
-        filename = '<UserSA:{}>'.format(token)
-        context = {}
-        try:
-            code = compile(code, filename, mode='exec')
-            exec(code, context)
+            # run device via DAI
+            dai = module_to_sa(App(context))
+            dai.start()
         except Exception:
             exc_output = StringIO()
             traceback.print_exc(file=exc_output)
             log.debug('User defined function exception:\n %s',
                       exc_output.getvalue())
             raise CompilationError(exc_output.getvalue())
+
+        self._device_processes[device.token] = dai
+
+        return device.token
+
+    def delete_device(self, device):
+        # Check if the device prcess exists
+        dai = self._device_processes.get(device.token)
+        if dai:
+            dai.terminate()
+
+        return device.token
 
 devicehandler = _DeviceHandler()

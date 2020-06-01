@@ -21,12 +21,30 @@ def index(request):
 
 @csrf_exempt
 def create_device(request):
+    """
+    Create a new AutoGen device or update an existing device.
+
+    :post.data code: The SA code for IoTtalk.
+                     AutoGen will run this code as your device.
+    :post.data token: Optional. If you want to update your device with new
+                      SA code, you can assign the token of the device. AutoGen
+                      will stop the previous device and run the new device.
+    :post.data version: Optional: 1 or 2, default: 2. This value is used to run
+                        different iottalk dan libraries. Depends on the device
+                        the user wants to create.
+
+    :response token: The token of the device has been created.
+                     Used to update or delete this device.
+    """
     if request.method != 'POST':
         return HttpResponseNotFound()
 
     code = request.POST.get("code")
     token = request.POST.get("token")
     version = request.POST.get("version", 2)
+
+    if not code:
+        return HttpResponse("code not found", status=400)
 
     if token:
         try:
@@ -45,7 +63,13 @@ def create_device(request):
 
 @csrf_exempt
 def delete_device(request):
-    if request.method != 'DELETE':
+    """
+    Stop a existing AutoGen device.
+
+    :post.data token: The token of the device to be stopped.
+                      It is given by create API.
+    """
+    if request.method != 'POST':
         return HttpResponseNotFound()
 
     token = request.POST.get("token")
@@ -64,6 +88,7 @@ def delete_device(request):
 
 @csrf_exempt
 def ccm_api(request):
+    """CCM API."""
     if request.method != 'POST':
         return HttpResponseNotFound()
 
@@ -82,5 +107,5 @@ def ccm_api(request):
         print(str(e))
         return HttpResponse('CCMAPIError', status=400)
 
-    # TODO
+    # TODO ?
     return HttpResponse(result)
