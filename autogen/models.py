@@ -17,3 +17,6 @@ class Device(models.Model):
     started = models.DateTimeField(null=True)
     stoped = models.DateTimeField(null=True)
     deleted = models.DateTimeField(null=True)
+
+    def to_dict(self):
+        return {k: getattr(self, k) for k in ['code', 'token', 'version']}

@@ -2,8 +2,11 @@ import requests
 
 import ccmapi.v0 as api
 
-from .config import ccm_api_username, ccm_api_password
+from .config import ccm_api_password, ccm_api_url, ccm_api_username
 from .utils import rgetattr
+
+
+api.config.api_url = ccm_api_url
 
 
 class _CcmApiHandler():
