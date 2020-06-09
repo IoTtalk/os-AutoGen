@@ -63,9 +63,10 @@ class _DeviceHandler():
     @staticmethod
     def _v1_proc(device):
         filename = '<sa:{}>'.format(device['token'])
+        context = {}
         try:
             code = compile(device['code'], filename, mode='exec')
-            exec(code)
+            exec(code, context)
         except Exception as err:
             exc_output = StringIO()
             traceback.print_exc(file=exc_output)
