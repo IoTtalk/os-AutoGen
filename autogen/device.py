@@ -2,16 +2,14 @@
 import logging
 import pathlib
 import sys
-import traceback
 
 from multiprocessing import get_context
 
 from django.http import HttpResponse
-from six import StringIO
 
 from iottalkpy.dai import module_to_sa
 
-from .exceptions import CompilationError
+from .exceptions import raise_compilation_error
 
 sys.path.append(str(pathlib.Path(__file__).parent.absolute()) + '/dan_v1')
 
@@ -66,12 +64,8 @@ class _DeviceHandler():
         try:
             code = compile(device['code'], filename, mode='exec')
             exec(code)
-        except Exception as err:
-            exc_output = StringIO()
-            traceback.print_exc(file=exc_output)
-            log.debug('User defined function exception:\n %s',
-                      exc_output.getvalue())
-            raise CompilationError(exc_output.getvalue())
+        except Exception:
+            raise_compilation_error()
 
     def _create_v2_device(self, device):
         try:
@@ -83,11 +77,7 @@ class _DeviceHandler():
             proc = module_to_sa(App(context))
             proc.start()
         except Exception:
-            exc_output = StringIO()
-            traceback.print_exc(file=exc_output)
-            log.debug('User defined function exception:\n %s',
-                      exc_output.getvalue())
-            raise CompilationError(exc_output.getvalue())
+            raise_compilation_error()
 
         self._device_processes[device.token] = proc
 

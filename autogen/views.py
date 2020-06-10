@@ -1,17 +1,22 @@
 """Django View for Autogen Subsystem."""
 import json
+import requests
 
 from uuid import uuid4
 
-from ccmapi.exceptions import CCMAPIError
 # from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 
 
-from .models import Device
+import ccmapi.v0 as api
+
+from ccmapi.exceptions import CCMAPIError
+
+from .config import ccm_api_args
 from .device import devicehandler
-from .ccmapi import ccmapihandler
+from .models import Device
+from .utils import rgetattr
 
 
 def index(request):
@@ -46,7 +51,6 @@ def create_device(request):
     device = Device(code=code, token=token, version=version)
     device.save()
 
-
     return HttpResponse(devicehandler.create_device(device))
 
 
@@ -78,24 +82,45 @@ def delete_device(request):
 
 @csrf_exempt
 def ccm_api(request):
-    """CCM API."""
+    """
+    CCM API.
+
+    :post.data api_name: IoTtalk v1/v2 CCM API name.
+    :post.data payload:  IoTtalk v1/v2 CCM API payload.
+    :post.data username: Optional, IoTtalk v2 username.
+    :post.data password: Optional, IoTtalk v2 password.
+    TODO: username/password should use access token instead
+    """
     if request.method != 'POST':
         return HttpResponseNotFound()
 
     api_name = request.POST.get('api_name')
     payload = json.loads(request.POST.get('payload', '{}'))
+    username = request.POST.get('username', None)
+    password = request.POST.get('password', None)
 
-    if not api_name:
-        return HttpResponse('api_name is required', status=400)
+    if api_name not in ccm_api_args:
+        return HttpResponse('api_name is not found', status=400)
     if not payload:
         return HttpResponse('payload is required', status=400)
 
-    try:
-        result = ccmapihandler.request(api_name, payload)
-        print(result)
-    except CCMAPIError as e:
-        print(str(e))
-        return HttpResponse('CCMAPIError', status=400)
+    # get api function from library ccmapi
+    f = rgetattr(api, api_name)
 
-    # TODO ?
+    # login user for v2
+    s = requests.Session()
+    if username and password:
+        u_id, cookie = api.account.login(username, password, session=s)
+
+    # extract args from payload
+    args = [payload.pop(k) for k in ccm_api_args.get(api_name, [])]
+
+    # assign logined session to invoke api
+    payload.update({'session': s})
+
+    try:
+        result = f(*args, session=s)
+    except CCMAPIError as e:
+        result = e
+
     return HttpResponse(result)
