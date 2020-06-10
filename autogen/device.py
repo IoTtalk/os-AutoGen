@@ -61,9 +61,10 @@ class _DeviceHandler():
     @staticmethod
     def _v1_proc(device):
         filename = '<sa:{}>'.format(device['token'])
+        context = {}
         try:
             code = compile(device['code'], filename, mode='exec')
-            exec(code)
+            exec(code, context)
         except Exception:
             raise_compilation_error()
 
