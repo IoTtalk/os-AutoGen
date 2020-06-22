@@ -101,8 +101,12 @@ def ccm_api(request):
 
     if api_name not in ccm_api_args:
         return HttpResponse('api_name is not found', status=400)
-    if not payload:
-        return HttpResponse('payload is required', status=400)
+
+    # extract args from payload
+    try:
+        args = [payload.pop(k) for k in ccm_api_args.get(api_name, [])]
+    except KeyError as e:
+        return HttpResponse('{} in the payload is required.'.format(e))
 
     # get api function from library ccmapi
     f = rgetattr(api, api_name)
@@ -112,9 +116,6 @@ def ccm_api(request):
     if username and password:
         u_id, cookie = api.account.login(username, password, session=s)
 
-    # extract args from payload
-    args = [payload.pop(k) for k in ccm_api_args.get(api_name, [])]
-
     # assign logined session to invoke api
     payload.update({'session': s})
 
@@ -123,4 +124,5 @@ def ccm_api(request):
     except CCMAPIError as e:
         result = e
 
-    return HttpResponse(result)
+    return HttpResponse(json.dumps(result))
+
