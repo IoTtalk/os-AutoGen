@@ -98,6 +98,7 @@ def ccm_api(request):
     payload = json.loads(request.POST.get('payload', '{}'))
     username = request.POST.get('username', None)
     password = request.POST.get('password', None)
+    session_id = request.POST.get('session_id', None)
 
     if api_name not in ccm_api_args:
         return HttpResponse('api_name is not found', status=400)
@@ -115,6 +116,8 @@ def ccm_api(request):
     s = requests.Session()
     if username and password:
         u_id, cookie = api.account.login(username, password, session=s)
+    elif session_id:
+        s.cookies.update({'session_id': session_id})
 
     # assign logined session to invoke api
     payload.update({'session': s})
@@ -125,4 +128,3 @@ def ccm_api(request):
         result = e
 
     return HttpResponse(json.dumps(result))
-
