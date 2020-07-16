@@ -18,7 +18,7 @@ from .device import devicehandler
 from .models import Device
 from .utils import rgetattr
 
-api.config.api_url = ccm_api_url
+api.config.config.api_url = ccm_api_url
 
 
 def index(request):
