@@ -13,10 +13,12 @@ import ccmapi.v0 as api
 
 from ccmapi.exceptions import CCMAPIError
 
-from .config import ccm_api_args
+from .config import ccm_api_args, ccm_api_url
 from .device import devicehandler
 from .models import Device
 from .utils import rgetattr
+
+api.config.api_url = ccm_api_url
 
 
 def index(request):
