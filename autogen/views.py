@@ -127,6 +127,6 @@ def ccm_api(request):
     try:
         result = f(*args, session=s)
     except CCMAPIError as e:
-        return HttpResponse(json.dumps(str(e)), status=400)
+        return HttpResponse(json.dumps(e.msg), status=e.status_code)
 
     return HttpResponse(json.dumps(result))
