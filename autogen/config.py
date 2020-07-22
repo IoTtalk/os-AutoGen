@@ -21,7 +21,7 @@ ccm_api_args = {
     'deviceobject.delete': ['p_id', 'do_id'],
     'networkapplication.create': ['p_id', 'joins'],
     'networkapplication.get': ['p_id', 'na_id'],
-    'networkapplication.update': ['p_id', 'na_id', 'dm_list'],
+    'networkapplication.update': ['p_id', 'na_id', 'dfm_list'],
     'networkapplication.delete': ['p_id', 'na_id'],
     'device.get': ['p_id', 'do_id'],
     'device.bind': ['p_id', 'do_id', 'd_id'],
