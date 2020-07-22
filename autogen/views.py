@@ -125,7 +125,7 @@ def ccm_api(request):
     payload.update({'session': s})
 
     try:
-        result = f(*args, session=s)
+        result = f(*args, **payload)
     except CCMAPIError as e:
         return HttpResponse(json.dumps(e.msg), status=e.status_code)
 
