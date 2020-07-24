@@ -96,11 +96,17 @@ def ccm_api(request):
     if request.method != 'POST':
         return HttpResponseNotFound()
 
-    api_name = request.POST.get('api_name')
-    payload = json.loads(request.POST.get('payload', '{}'))
     username = request.POST.get('username', None)
     password = request.POST.get('password', None)
     session_id = request.POST.get('session_id', None)
+    api_name = request.POST.get('api_name')
+
+    try:
+        payload = json.loads(request.POST.get('payload', '{}'))
+    except json.decoder.JSONDecodeError:
+        return HttpResponse('The payload should be in JSON format', status=400)
+    except ValueError:
+        return HttpResponse('The payload should be in JSON format', status=400)
 
     if api_name not in ccm_api_args:
         return HttpResponse('api_name is not found', status=400)
