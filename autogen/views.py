@@ -111,28 +111,32 @@ def ccm_api(request):
     if api_name not in ccm_api_args:
         return HttpResponse('api_name is not found', status=400)
 
-    # extract args from payload
     try:
+        # extract args from payload
         args = [payload.pop(k) for k in ccm_api_args.get(api_name, [])]
-    except KeyError as e:
-        return HttpResponse('{} in the payload is required.'.format(e))
 
-    # get api function from library ccmapi
-    f = rgetattr(api, api_name)
+        # get api function from library ccmapi
+        f = rgetattr(api, api_name)
 
-    # login user for v2
-    s = requests.Session()
-    if username and password:
-        u_id, cookie = api.account.login(username, password, session=s)
-    elif session_id:
-        s.cookies.update({'session_id': session_id})
+        # login user for v2
+        s = requests.Session()
+        if username and password:
+            u_id, cookie = api.account.login(username, password, session=s)
+        elif session_id:
+            s.cookies.update({'session_id': session_id})
 
-    # assign logined session to invoke api
-    payload.update({'session': s})
+        # assign logined session to invoke api
+        payload.update({'session': s})
 
-    try:
         result = f(*args, **payload)
+
+    except AttributeError as e:
+        return HttpResponse(str(e), status=400)
+    except KeyError as e:
+        return HttpResponse('{} in the payload is required.'.format(e), status=400)
     except CCMAPIError as e:
         return HttpResponse(json.dumps(e.msg), status=e.status_code)
+    except requests.exceptions.ConnectionError:
+        return HttpResponse('Connection error, please check that the IoTtalk Server ("api_url") can be connected normally.', status=400)
 
     return HttpResponse(json.dumps(result))
