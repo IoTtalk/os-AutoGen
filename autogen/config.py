@@ -11,7 +11,7 @@ ccm_api_args = {
     'devicefeature.delete': ['df'],
     'devicemodel.create': ['dm_name', 'dfs'],
     'devicemodel.get': ['dm'],
-    'devicemodel.update': ['dm_id', 'dm_name', 'df_list'],
+    'devicemodel.update': ['dm_id', 'dm_name', 'dfs'],
     'devicemodel.delete': ['dm'],
     'project.create': ['p_name'],
     'project.get': ['p_id'],
