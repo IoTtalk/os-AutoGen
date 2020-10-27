@@ -17,3 +17,7 @@ Migrate database
     python manage.py makemigrations autogen
     python manage.py migrate
 
+Modify Config file, set the ccm host to your iottalk-ccm server. 
+::
+    # autogen/config.
+    ccm_api_url = 'http://localhost:7788/api/v0'
