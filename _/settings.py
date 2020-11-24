@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'iottalk_autogen.urls'
+ROOT_URLCONF = '_.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'iottalk_autogen.wsgi.application'
+WSGI_APPLICATION = '_.wsgi.application'
 
 
 # Database

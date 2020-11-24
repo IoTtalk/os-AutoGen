@@ -2,7 +2,7 @@ import os
 
 from setuptools import find_packages, setup
 
-import iottalk_autogen
+import _
 
 BASE_DIR = os.path.dirname(__file__)
 
@@ -18,7 +18,7 @@ def get_backport_requires():
 
 setup(
     name='iottalkautogen',
-    version=iottalk_autogen.version,
+    version=_.version,
     author='The IoTtalk Team',
     author_email='IoTtalkcontributors',
     url='https://github.com/IoTtalk/AutoGen-Subsystem',
