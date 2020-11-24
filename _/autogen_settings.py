@@ -1,1 +1,1 @@
-autogen/settings.py
+../autogen/settings.py

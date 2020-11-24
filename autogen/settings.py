@@ -1,4 +1,4 @@
-from .settings import *  # noqa: F403 import shared settings
+from .settings import *  # noqa: F401,F403 imported but unused,import shared settings, F401
 
 SECRET_KEY = 'qsq%%HG*Cww!06!l?7=\\~SL!"b+2Ut_r{j?Y,)#CzafQb2H3Ojb'
 
