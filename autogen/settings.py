@@ -1,3 +1,7 @@
+from .settings import *  # noqa: F403 import shared settings
+
+SECRET_KEY = 'qsq%%HG*Cww!06!l?7=\\~SL!"b+2Ut_r{j?Y,)#CzafQb2H3Ojb'
+
 ccm_api_url = 'http://localhost:7788/api/v0'
 
 ccm_api_args = {
