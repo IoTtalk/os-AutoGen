@@ -1,3 +1,4 @@
 django==3.0.6
 six
 iottalk-py
+git+http://gitlab+deploy-token-145961:Vyz1ekSiehSjKg2o6kxs@gitlab.com/IoTtalk/ccmapi-py.git
