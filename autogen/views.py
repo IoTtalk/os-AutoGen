@@ -137,6 +137,8 @@ def ccm_api(request):
     except CCMAPIError as e:
         return HttpResponse(json.dumps(e.msg), status=e.status_code)
     except requests.exceptions.ConnectionError:
-        return HttpResponse('Connection error, please check that the IoTtalk Server ("api_url") can be connected normally.', status=400)
+        return HttpResponse('Connection error, '
+                            + 'please check that the IoTtalk Server ("api_url") '
+                            + 'can be connected normally.', status=400)
 
     return HttpResponse(json.dumps(result))

@@ -10,6 +10,7 @@ log.setLevel(logging.DEBUG)
 class CompilationError(Exception):
     pass
 
+
 def raise_compilation_error():
     exc_output = StringIO()
     traceback.print_exc(file=exc_output)

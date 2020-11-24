@@ -6,6 +6,7 @@ import iottalk_autogen
 
 BASE_DIR = os.path.dirname(__file__)
 
+
 def get_requires():
     with open(os.path.join(BASE_DIR, 'requirements.txt')) as f:
         return tuple(map(str.strip, f.readlines())) + get_backport_requires()
