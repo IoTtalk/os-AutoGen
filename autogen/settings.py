@@ -2,6 +2,8 @@ from .settings import *  # noqa: F401,F403 imported but unused,import shared set
 
 SECRET_KEY = 'qsq%%HG*Cww!06!l?7=\\~SL!"b+2Ut_r{j?Y,)#CzafQb2H3Ojb'
 
+ROOT_URLCONF = 'autogen.urls'
+
 ccm_api_url = 'http://localhost:7788/api/v0'
 
 ccm_api_args = {
