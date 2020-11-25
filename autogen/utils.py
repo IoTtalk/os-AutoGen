@@ -1,6 +1,8 @@
 """Utils for Autogen Subsystem."""
 import functools
 
+from .exceptions import JsonBadRequest
+
 
 def get_client_ip(request):
     """
@@ -23,3 +25,30 @@ def rgetattr(obj, attr, *args):
     def _getattr(obj, attr):
         return getattr(obj, attr, *args)
     return functools.reduce(_getattr, [obj] + attr.split('.'))
+
+
+def _check(keys, payload, pred, msg):
+    for k in keys:
+        if not pred(k, payload):
+            raise JsonBadRequest(msg.format(k=k))
+
+
+def _required(k, payload):
+    return k in payload
+
+
+def check_required(keys: list, payload: dict):
+    return _check(keys, payload, _required, 'field `{k}` not found')
+
+
+def check_nonempty(keys: list, payload: dict):
+    return _check(keys, payload, _nonempty, 'field `{k}` should not be empty')
+
+
+def _nonempty(k, payload):
+    return len(payload.get(k, [])) != 0
+
+
+def check_type(typ: type, keys: list, payload: dict):
+    return _check(keys, payload, lambda x, d: isinstance(d[x], typ),
+                  'field `{k}` type error')

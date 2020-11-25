@@ -4,9 +4,15 @@ SECRET_KEY = 'qsq%%HG*Cww!06!l?7=\\~SL!"b+2Ut_r{j?Y,)#CzafQb2H3Ojb'
 
 ROOT_URLCONF = 'autogen.urls'
 
-ccm_api_url = 'http://localhost:7788/api/v0'
+INSTALLED_APPS += []
 
-ccm_api_args = {
+MIDDLEWARE += [
+    'autogen.middleware.JsonRequestMiddleware',
+]
+
+CCM_API_URL = 'http://localhost:7788/api/v0'
+
+CCM_API_ARGS = {
     'account.create': ['username', 'password'],
     'account.login': ['uesrname', 'password'],
     'account.delete': [],
@@ -35,3 +41,9 @@ ccm_api_args = {
     'device.bind': ['p_id', 'do_id', 'd_id'],
     'device.unbind': ['p_id', 'do_id']
 }
+
+# configure ccm api in global
+#
+import ccmapi.v0 as ccmapi
+
+ccmapi.config.config.api_url = CCM_API_URL

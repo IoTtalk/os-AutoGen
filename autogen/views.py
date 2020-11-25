@@ -2,31 +2,35 @@
 import json
 import requests
 
+from datetime import datetime
 from uuid import uuid4
 
-# from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound
+from django.conf import settings
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-
+from django.views.decorators.http import require_http_methods
 
 import ccmapi.v0 as api
 
 from ccmapi.exceptions import CCMAPIError
 
-from .settings import ccm_api_args, ccm_api_url
 from .device import devicehandler
+from .exceptions import JsonBadRequest
 from .models import Device
-from .utils import rgetattr
-
-api.config.config.api_url = ccm_api_url
+from .utils import rgetattr, check_required, check_nonempty, check_type
 
 
-def index(request):
-    """Index page, useless."""
-    return HttpResponse("404")
+def json_response(payload: dict = None) -> JsonResponse:
+    payload = {} if payload is None else payload
+    assert 'state' not in payload, 'duplicate key `state` in payload'
+    payload.update({'state': 'ok'})
+    return JsonResponse(payload)
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
 def create_device(request):
     """
     Create a new AutoGen device or update an existing device.
@@ -40,23 +44,27 @@ def create_device(request):
     :response token: The token of the device has been created.
                      Used to delete this device.
     """
-    if request.method != 'POST':
-        return HttpResponseNotFound()
+    payload = request.json
+    payload.setdefault('version', 2)
+    payload.setdefault('token', str(uuid4()))
 
-    code = request.POST.get("code")
-    version = request.POST.get("version", 2)
+    check_required(['code'], payload)
+    check_nonempty(['code', 'token'], payload)
+    check_type(int, ['version'], payload)
 
-    if not code:
-        return HttpResponse("code not found", status=400)
+    dev = Device.objects.create(
+        code=payload['code'],
+        token=payload['token'],
+        version=payload['version'])
 
-    token = str(uuid4())
-    device = Device(code=code, token=token, version=version)
-    device.save()
-
-    return HttpResponse(devicehandler.create_device(device))
+    return json_response({
+        'timestamp': datetime.now().timestamp(),
+        'token': devicehandler.create_device(dev),
+    })
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
 def delete_device(request):
     """
     Stop a existing AutoGen device.
@@ -64,25 +72,19 @@ def delete_device(request):
     :post.data token: The token of the device to be stopped.
                       It is given by create API.
     """
-    if request.method != 'POST':
-        return HttpResponseNotFound()
-
-    token = request.POST.get("token")
-    if not token:
-        return HttpResponse('token is required', status=400)
-
-    try:
-        device = Device.objects.get(token=token)
-    except Device.DoesNotExist:
-        return HttpResponse('device not found', status=400)
-
-    token = devicehandler.delete_device(device)
-    device.delete()
-
-    return HttpResponse(token)
+    payload = request.json
+    check_required(['token'], payload)
+    dev = get_object_or_404(Device, token=token)
+    token = devicehandler.delete_device(dev)
+    dev.delete()
+    return json_response({
+        'timestamp': datetime.now().timestamp(),
+        'token': token,
+    })
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
 def ccm_api(request):
     """
     CCM API.
@@ -93,27 +95,21 @@ def ccm_api(request):
     :post.data password: Optional, IoTtalk v2 password.
     TODO: username/password should use access token instead
     """
-    if request.method != 'POST':
-        return HttpResponseNotFound()
+    payload = request.json
+    check_required(['api_name', 'payload'], payload)
+    username = payload.get('username', None)
+    password = payload.get('password', None)
+    session_id = payload.get('session_id', None)
+    api_name = payload.get('api_name')
 
-    username = request.POST.get('username', None)
-    password = request.POST.get('password', None)
-    session_id = request.POST.get('session_id', None)
-    api_name = request.POST.get('api_name')
-
-    try:
-        payload = json.loads(request.POST.get('payload', '{}'))
-    except json.decoder.JSONDecodeError:
-        return HttpResponse('The payload should be in JSON format', status=400)
-    except ValueError:
-        return HttpResponse('The payload should be in JSON format', status=400)
-
-    if api_name not in ccm_api_args:
-        return HttpResponse('api_name is not found', status=400)
+    api_args = settings.CCM_API_ARGS
+    if api_name not in api_args:
+        raise JsonBadRequest(f'api_name {api_name} not found')
 
     try:
+        api_payload = payload.get('payload')
         # extract args from payload
-        args = [payload.pop(k) for k in ccm_api_args.get(api_name, [])]
+        args = [api_payload.pop(k) for k in api_args.get(api_name, [])]
 
         # get api function from library ccmapi
         f = rgetattr(api, api_name)
@@ -126,19 +122,21 @@ def ccm_api(request):
             s.cookies.update({'session_id': session_id})
 
         # assign logined session to invoke api
-        payload.update({'session': s})
+        api_payload.update({'session': s})
 
-        result = f(*args, **payload)
+        result = f(*args, **api_payload)
 
     except AttributeError as e:
-        return HttpResponse(str(e), status=400)
+        raise JsonBadRequest(str(e))
     except KeyError as e:
-        return HttpResponse('{} in the payload is required.'.format(e), status=400)
+        raise JsonBadRequest(f'{e} in the payload is required')
     except CCMAPIError as e:
-        return HttpResponse(json.dumps(e.msg), status=e.status_code)
+        err = JsonBadRequest(json.dumps(e.msg))
+        err.status = e.status_code
+        raise err
     except requests.exceptions.ConnectionError:
-        return HttpResponse('Connection error, '
-                            + 'please check that the IoTtalk Server ("api_url") '
-                            + 'can be connected normally.', status=400)
+        return JsonBadRequest('Connection error, '
+                              'please check that the IoTtalk Server ("api_url") '
+                              'can be connected normally.')
 
-    return HttpResponse(json.dumps(result))
+    return json_response({'result': result})
