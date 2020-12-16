@@ -74,6 +74,7 @@ def delete_device(request):
     """
     payload = request.json
     check_required(['token'], payload)
+    token = payload.get('token', None)
     dev = get_object_or_404(Device, token=token)
     token = devicehandler.delete_device(dev)
     dev.delete()
