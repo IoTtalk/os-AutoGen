@@ -36,13 +36,28 @@ CCM_API_ARGS = {
     'deviceobject.create': ['p_id', 'dm_name', 'dfs'],
     'deviceobject.get': ['p_id', 'do_id'],
     'deviceobject.delete': ['p_id', 'do_id'],
+    'devicefeatureobject.get': ['p_id', 'do_id', 'dfo_id'],
+    'devicefeatureobject.update': ['p_id', 'do_id', 'dfo_id', 'alias_name', 'df_parameter'],
+    'function.create': ['fn_name', 'code'],
+    'function.update': ['fn_id', 'code'],
+    'function.delete': ['fn_id'],
+    'function.list': [],
+    'function.list_df': ['df_id'],
+    'function.list_na': [],
+    'function.get': ['fn_id'],
+    'function.get_all_versions': ['fn_id'],
+    'function.get_version': ['fnvt_idx'],
+    'function.create_sdf': ['fn_id'],
+    'function.delete_sdf': ['fn_id'],
     'networkapplication.create': ['p_id', 'joins'],
     'networkapplication.get': ['p_id', 'na_id'],
     'networkapplication.update': ['p_id', 'na_id', 'dfm_list'],
     'networkapplication.delete': ['p_id', 'na_id'],
     'device.get': ['p_id', 'do_id'],
     'device.bind': ['p_id', 'do_id', 'd_id'],
-    'device.unbind': ['p_id', 'do_id']
+    'device.unbind': ['p_id', 'do_id'],
+    'alias.get': ['mac_addr', 'df_name'],
+    'alias.set': ['mac_addr', 'df_name', 'alias_name']
 }
 
 # configure ccm api in global
