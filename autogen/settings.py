@@ -10,11 +10,11 @@ MIDDLEWARE += [
     'autogen.middleware.JsonRequestMiddleware',
 ]
 
-CCM_API_URL = 'http://localhost:7788/api/v0'
+CCM_API_URL = '<ccm_api.iottalk.url>'
 
 CCM_API_ARGS = {
     'account.create': ['username', 'password'],
-    'account.login': ['uesrname', 'password'],
+    'account.login': ['username', 'password'],
     'account.delete': [],
     'account.profile': [],
     'devicefeature.create': ['df_name', 'type', 'parameter'],
@@ -60,8 +60,11 @@ CCM_API_ARGS = {
     'alias.set': ['mac_addr', 'df_name', 'alias_name']
 }
 
+LOG_DIR = USER_DIR / (os.getenv('LOG_DIR') or 'log/autogen/')
+
 # configure ccm api in global
 #
 import ccmapi.v0 as ccmapi
 
 ccmapi.config.config.api_url = CCM_API_URL
+

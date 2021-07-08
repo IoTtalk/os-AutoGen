@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from pathlib import Path
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -117,3 +119,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+USER_DIR = os.getenv('USER_DIR')
+
+if not USER_DIR:
+    if os.name.startswith('posix'):
+        USER_DIR = '{}/.iottalk'.format(os.getenv('HOME', '.'))
+    elif os.name.startswith('nt'):
+        USER_DIR = '{}/_iottalk'.format(os.getenv('USERPROFILE'))
+
+USER_DIR = Path(USER_DIR)
