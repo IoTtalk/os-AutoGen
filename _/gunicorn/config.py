@@ -1,3 +1,5 @@
+import os
+
 import multiprocessing
 
 from django.conf import settings
@@ -38,14 +40,14 @@ logconfig_dict = {
         },
         'log_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': settings.LOG_DIR / 'gunicorn_access.log',  # noqa: F405
+            'filename': os.path.join(settings.LOG_DIR, 'gunicorn_access.log'),
             'maxBytes': 10 * 1024 * 1024,
             'backupCount': 3,
             'encoding': 'UTF-8',
         },
         'error_log_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': settings.LOG_DIR / 'gunicorn_error.log',  # noqa: F405
+            'filename': os.path.join(settings.LOG_DIR, 'gunicorn_error.log'),
             'maxBytes': 10 * 1024 * 1024,
             'backupCount': 3,
             'encoding': 'UTF-8',
