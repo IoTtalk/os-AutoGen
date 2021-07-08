@@ -1,6 +1,6 @@
-from .settings import *  # noqa: F401,F403 imported but unused,import shared settings, F401
+import os
 
-SECRET_KEY = 'qsq%%HG*Cww!06!l?7=\\~SL!"b+2Ut_r{j?Y,)#CzafQb2H3Ojb'
+from .settings import *  # noqa: F401,F403 imported but unused,import shared settings, F401
 
 ROOT_URLCONF = 'autogen.urls'
 
@@ -10,7 +10,7 @@ MIDDLEWARE += [
     'autogen.middleware.JsonRequestMiddleware',
 ]
 
-CCM_API_URL = '<ccm_api.iottalk.url>'
+CCM_API_URL = os.getenv('CCM_API_URL')
 
 CCM_API_ARGS = {
     'account.create': ['username', 'password'],
@@ -60,7 +60,7 @@ CCM_API_ARGS = {
     'alias.set': ['mac_addr', 'df_name', 'alias_name']
 }
 
-LOG_DIR = USER_DIR / (os.getenv('LOG_DIR') or 'log/autogen/')
+LOG_DIR =  os.path.join(LOG_DIR, 'autogen/')
 
 # configure ccm api in global
 #

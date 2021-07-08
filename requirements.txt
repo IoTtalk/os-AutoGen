@@ -1,3 +1,8 @@
 django~=3.1
-iottalk-py~=2.2
+python-dotenv>=0.15.0
+
+# For v2 AutoGen Device
+iottalk-py~=2.3
+
+# For CCM API query
 ccmapi@git+http://gitlab+deploy-token-145961:Vyz1ekSiehSjKg2o6kxs@gitlab.com/IoTtalk/ccmapi-py.git

@@ -14,15 +14,19 @@ import os
 
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Load the env to the environment variables
+load_dotenv(BASE_DIR / '_/env/.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '<secret_key>'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -74,11 +78,26 @@ WSGI_APPLICATION = '_.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# Database
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.{}'.format(os.getenv('DATABASE_ENGINE') or 'sqlite3'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
+        'NAME': os.getenv('DATABASE_NAME' or os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        # Set the SQL mode to STRICT_ALL_TABLES.
+        # This is not a mandatory option but Django recommends.
+        #
+        # Ref: https://docs.djangoproject.com/en/3.1/ref/databases/#setting-sql-mode
+        # Ref: https://tinyurl.com/m9fckp4y (MySQL official documentation)
+        'OPTIONS': {
+            'sql_mode': 'STRICT_ALL_TABLES',
+        },
+    },
 }
 
 
@@ -129,3 +148,5 @@ if not USER_DIR:
         USER_DIR = '{}/_iottalk'.format(os.getenv('USERPROFILE'))
 
 USER_DIR = Path(USER_DIR)
+
+LOG_DIR = USER_DIR / (os.getenv('LOG_DIR') or 'log/')
