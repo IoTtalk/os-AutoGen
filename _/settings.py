@@ -89,14 +89,6 @@ DATABASES = {
         'NAME': os.getenv('DATABASE_NAME' or os.path.join(BASE_DIR, 'db.sqlite3')),
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        # Set the SQL mode to STRICT_ALL_TABLES.
-        # This is not a mandatory option but Django recommends.
-        #
-        # Ref: https://docs.djangoproject.com/en/3.1/ref/databases/#setting-sql-mode
-        # Ref: https://tinyurl.com/m9fckp4y (MySQL official documentation)
-        'OPTIONS': {
-            'sql_mode': 'STRICT_ALL_TABLES',
-        },
     },
 }
 
