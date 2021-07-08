@@ -136,8 +136,10 @@ def ccm_api(request):
         err.status = e.status_code
         raise err
     except requests.exceptions.ConnectionError:
-        return JsonBadRequest('Connection error, '
+        raise JsonBadRequest('Connection error, '
                               'please check that the IoTtalk Server ("api_url") '
                               'can be connected normally.')
 
+    if 'account.login' == api_name:
+        return json_response({'result': {'u_id': result[0]}})
     return json_response({'result': result})
