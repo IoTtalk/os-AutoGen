@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Load the env to the environment variables
-load_dotenv(os.path.join(BASE_DIR, '_/env/.env'))
+load_dotenv(os.path.join(BASE_DIR, '_/env/env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/

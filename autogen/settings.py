@@ -1,6 +1,11 @@
 import os
 
+from dotenv import load_dotenv
+
 from .settings import *  # noqa: F401,F403 imported but unused,import shared settings, F401
+
+# Load the env to the environment variables
+load_dotenv(os.path.join(BASE_DIR, '_/env/env'))
 
 ROOT_URLCONF = 'autogen.urls'
 
