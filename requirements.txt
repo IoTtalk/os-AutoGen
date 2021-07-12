@@ -6,3 +6,6 @@ iottalk-py~=2.3
 
 # For CCM API query
 ccmapi@git+http://gitlab+deploy-token-145961:Vyz1ekSiehSjKg2o6kxs@gitlab.com/IoTtalk/ccmapi-py.git
+
+# For AutoGen Device random distributioin
+numpy~=1.20.2
