@@ -1,6 +1,9 @@
 django~=3.1
 python-dotenv>=0.15.0
 
+# https://docs.djangoproject.com/en/3.1/ref/databases/#mysql-db-api-drivers
+mysqlclient>=1.4.0
+
 # For v2 AutoGen Device
 iottalk-py~=2.3
 

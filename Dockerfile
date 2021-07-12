@@ -6,7 +6,7 @@ COPY . /iottalk-autogen
 
 RUN apt update && \
 # Install build dependencies
-    apt install -y --no-install-recommends git && \
+    apt install -y --no-install-recommends git python3-dev default-libmysqlclient-dev build-essential && \
     pip install --no-cache-dir -U pip && \
 # Install requirements
     pip install --no-cache-dir -r requirements.txt && \
