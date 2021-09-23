@@ -66,6 +66,11 @@ Create Example XTalk
     def index(request):
         ...
 
+#. Migrate DB::
+
+    ./manage.py makemigrations --settings=_.footalk_settings
+    ./manage.py migrate --settings=_.footalk_settings
+
 #. Start your FooTalk at port 8081 and the AutoGen Subsystem at port 8080::
 
     ./manage.py runsites -s autogen:8080 -s footalk:8081
