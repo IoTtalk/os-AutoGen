@@ -1,29 +1,41 @@
 IoTtalk AutoGen Subsystem
-===============================================================================
+=========================
 
+Requirement
+-----------
+
+We recommend using Python >= 3.5, and you should use **pip >= 10.0.0**
 
 Installation
-----------------------------------------------------------------------
+------------
 
-Install required package
-::
+Install required package::
 
     pip install -r requirements.txt
 
-Migrate database
-::
+Copy environment file from example::
+
+    cp _/env/.env.example _/env/env
+
+Modify environment file `_/env/env`, replace any **`<xxx>`** to your setting
+
+    #. Set up the SECRET_KEY::
+
+        SECRET_KEY="<your_secret_key>"
+
+    #. Set up the ccm host to your iottalk-ccm server::
+
+        CCM_API_URL = 'http://<CCM_HOST>[:<CCM_PORT>]/api/v0'
+
+    #. Set up other environments to be changed
+
+Migrate database::
 
     ./manage.py migratesites
 
-Modify Setting file, set the ccm host to your iottalk-ccm server.
-::
-
-    # in autogen/settings.py
-    CCM_API_URL = 'http://<CCM_HOST>[:<CCM_PORT>]/api/v0'
-
 
 Create Example XTalk
-----------------------------------------------------------------------
+--------------------
 
 #. Create a Django application ``footalk``::
 
