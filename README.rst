@@ -4,7 +4,7 @@ IoTtalk AutoGen Subsystem
 Requirement
 -----------
 
-We recommend using Python >= 3.5, and you should use **pip >= 10.0.0**
+We recommend using Python >= 3.7 (for numpy), and you should use **pip >= 10.0.0**
 
 Installation
 ------------
