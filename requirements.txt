@@ -12,3 +12,6 @@ ccmapi@git+https://gitlab+deploy-token-583794:GPFAk3Me7NpsPQLbswVe@gitlab.com/Io
 
 # For AutoGen Device random distributioin
 numpy~=1.20.2
+
+# For sites migration
+python-dotenv~=0.20.0
